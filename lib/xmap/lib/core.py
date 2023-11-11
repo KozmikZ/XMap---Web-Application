@@ -2,12 +2,11 @@ import urllib3
 import re
 from selenium import webdriver
 from lib.xmap.lib.url import Url
-from lib.xmap.lib.utils import rndhead
+from lib.xmap.lib.utils import rndhead,get_url_parameters
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
 from lib.xmap.lib.vulnerability import Vulnerability
-from lib.logging import Logger
 
 def pops_alert(url:str,driver:webdriver.Firefox,payload:str)->bool:
     """
@@ -36,13 +35,12 @@ def pops_alert(url:str,driver:webdriver.Firefox,payload:str)->bool:
 
 
 
-def scan_url_parameter(url:str,logger:Logger,p,depth:int=None,manual:bool=False,verbose:bool=False)->list[str]: # returns all working rxss links for a given parameter and url
+def scan_url_parameter(url:str,p,depth:int=None)->list[Vulnerability]: # returns all working rxss links for a given parameter and url
     """
     I use the payload list file to test every payloads reflection (depending on the depth, a number of payloads is tested)
     I then check for exact reflections in the site, those not tampered with by the back-end/front-end
     After I'm finished, I test every perfectly reflected payload for a popup window. If such window is detected, the software has found a vulnerability
     """
-    logger.log(f"Testing parameter {p} in site {url}")
 
     # first test if parameter reflects on site:
     url:Url = Url(url)
@@ -50,7 +48,6 @@ def scan_url_parameter(url:str,logger:Logger,p,depth:int=None,manual:bool=False,
     resp = urllib3.request("GET",url.__repr__(),headers={"User-Agent":rndhead()})
     reflections = re.finditer(string=str(resp.data),pattern=r"rnT3xqw")
     if len(list(reflections))==0:
-        logger.log("No reflections found, stopping")
         return []
 
     
@@ -74,8 +71,6 @@ def scan_url_parameter(url:str,logger:Logger,p,depth:int=None,manual:bool=False,
                 break
             dbg_c+=1
             payload = payload[:-1] # removing \n to prevent it getting injected
-            if verbose:
-                logger.log(f"Testing payload {payload}") # verbose log
 
             url.inject(p,locator_string+payload+terminator_string) # injecting the payload into the url
             resp = urllib3.request("GET",url.__repr__(),headers={"User-Agent":rndhead()})
@@ -92,16 +87,12 @@ def scan_url_parameter(url:str,logger:Logger,p,depth:int=None,manual:bool=False,
                         st,en = r.span() # start and end of the reflection
                         str_reflection = str(resp.data)[st+4:en-4] # the reflection string
                         if str_reflection==payload:
-                            if verbose:
-                                logger.log(f"Found possible XSS reflection for parameter {p} with payload {payload}") # verbose log
                             perfect = True
                     if perfect:
                         vulnerable_to_payloads.append(payload)
             else:
                 tolerance+=1
-                if tolerance>100 and manual==False:
-                    logger.log("Site is most likely blocking our requests...")
-                    logger.log("Basic tests failed")
+                if tolerance>100:
                     return []
         options = Options() # setting up the webdriver, so we dont have to reopen it everytime the function is ran
         options.add_argument('--headless')
@@ -111,7 +102,6 @@ def scan_url_parameter(url:str,logger:Logger,p,depth:int=None,manual:bool=False,
         driver = webdriver.Firefox(options=options,service=driver_service) 
         rxss_vulns: list[Vulnerability] = []
 
-        logger.log(f"Found {len(vulnerable_to_payloads)} reflections")
 
         for payload in vulnerable_to_payloads:
             url.inject(p,payload)
@@ -123,7 +113,7 @@ def scan_url_parameter(url:str,logger:Logger,p,depth:int=None,manual:bool=False,
 
 
 
-def scan_url_parameter_brute(url:str,logger:Logger,p,depth:int,manual:bool=False,verbose:bool=False)->list[str]:
+def scan_url_parameter_brute(url:str,p:str,depth:int,manual:bool=False,verbose:bool=False)->list[str]:
     url:Url = Url(url)
 
     options = Options() # setting up the webdriver, so we dont have to reopen it everytime the function is ran
@@ -151,24 +141,10 @@ def scan_url_parameter_brute(url:str,logger:Logger,p,depth:int,manual:bool=False
 
  
     
+def scan_url_whole(url:str) -> list[Vulnerability]:
+    params = get_url_parameters(url)
+    total_xss_vulns = []
+    for p in params:
+        total_xss_vulns.append(scan_url_parameter(url,p,depth=100))
+    
 
-
-"""
-FIRST TEST IF THE SITE EVEN REFLECTS
-Things to account for TODO:
-First of all, there needs to be a way to test for payloads that:
-    Have a different input and output
-Second, a possible bypass of some ddos protection software. Or just something that is not behaving like a bandit. Wrecking the site with payloads.
-And you are mostly just getting autobanned, so how to overcome that?
-All of these things are not accounted for as of now
-"""
-
-"""
-Statistics ->
-300 42.6 seconds
-300 39.6 seconds
--> seems the difference is not too big but it would scale up when tested with larger amounts of payloads
-2000 270
-2000 220
-But truly it seems that the deep one is more effective by far
-"""
