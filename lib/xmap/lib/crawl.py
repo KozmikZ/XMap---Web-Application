@@ -19,12 +19,14 @@ def scrape_links(url:str,domain:str): # scrapes all links on a single page that 
         anchors = site.find_all("a" or "li")
         for a in anchors:
             href:str = a.attrs.get("href")
-            if href!=None and href!="":
+            if href!=None and href!="":  
                 # first check if there is the domain, or if its a relative link, so we don't leave the domain
                 if href.startswith(domain):
                     links.append(href)
                 elif href[0]=="/":
                     links.append(domain+href)
+                elif href.startswith("#/"):
+                    links.append(domain+"/"+href)
     return links
 
 def crawl_through(inp_start_page:str,depth=100): # scrapes a domain for sites with parameters

@@ -1,9 +1,9 @@
 from lib.xmap.lib.core import scan_url_whole,scan_url_whole_brute
 from lib.xmap.lib.crawl import crawl_through
 from lib.xmap.lib.vulnerability import Vulnerability
-from enum import Enum
-
-
+from datetime import datetime as dt
+import functools
+import json
     
 # TODO possible way to communicate with the server would be by use of a server state update method and passing the server object
 
@@ -14,9 +14,20 @@ class ScanCore: # A single object abstraction for a given scan, since it needs t
         self.vulns: list[Vulnerability] = []
         self._server = server
         self.id = id
+    def get_metadata(func): # a wrapper that sets up metadata about runtime within the object
+        @functools.wraps(func)
+        def wrap(self,*args,**kwargs): # started, ended timestamps, then computes runtime, saves metadata in json
+            started = dt.now()
+            self.metadata["started"]=str(started)
+            func(self,*args,**kwargs)
+            ended = dt.now()
+            self.metadata["ended"]=str(ended)
+            self.metadata["runtime"]=str(ended-started)
+            self.finished=True
+        return wrap
+    @get_metadata
     def quick_scan(self,target:str):
-        self._attack_target_single(target_url=target)
-        self.finished = True
+        self._attack_target_crawl(target_url=target)
     def _attack_target_single(self,target_url:str,sdepth=40,brute=False):
         if brute: # this code is starting to look like shit...
             self.vulns.extend(scan_url_whole_brute(target_url,depth=sdepth))
@@ -31,7 +42,10 @@ class ScanCore: # A single object abstraction for a given scan, since it needs t
             for url in attack_vectors:
                 self.vulns.extend(scan_url_whole(url,depth=sdepth))
         return self.vulns
-    def deep_scan(target:str): # a deeper scan, perhaps with manual aspects, idk right now TODO
+    @get_metadata
+    def deep_scan(self,target:str):
+        self._attack_target_crawl(target,cdepth=60,sdepth=250,brute=True)
+    def manual_scan(self,target:str,cdepth:int,sdepth:int,brute:bool):
         ...
     def to_json(self) -> dict:
         json_vulns = []
