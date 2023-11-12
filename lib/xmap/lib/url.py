@@ -1,10 +1,9 @@
 from lib.xmap.lib.utils import get_url_parameters
 
 
-class Url:
-    def __init__(self,url:str):
+class Url: # an object encapsulating Url state, good since it makes the code clear, not optimised in regards to time
+    def __init__(self,url:str): 
         self._url = url
-        
         #identify injection points:
         self.injection_parameters : dict = get_url_parameters(url)
     def inject(self,p:str,val:str):

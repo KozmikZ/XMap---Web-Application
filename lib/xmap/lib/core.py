@@ -7,6 +7,7 @@ from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
 from lib.xmap.lib.vulnerability import Vulnerability
+from lib.xmap.lib.vulnerability import Type
 
 def pops_alert(url:str,driver:webdriver.Firefox,payload:str)->bool:
     """
@@ -49,7 +50,7 @@ def scan_url_parameter(url:str,p,depth:int=None)->list[Vulnerability]: # returns
     reflections = re.finditer(string=str(resp.data),pattern=r"rnT3xqw")
     if len(list(reflections))==0:
         return []
-
+    rxss_vulns: list[Vulnerability] = []
     
     vulnerable_to_payloads = [] # only possible reflections, not tested yet, the software needs to examine these reflections
     tolerance=0
@@ -100,13 +101,15 @@ def scan_url_parameter(url:str,p,depth:int=None)->list[Vulnerability]: # returns
         geckodriver_path = "/snap/bin/geckodriver"  # specify the path to your geckodriver -> unfortunately have to do that since it cannot find it otherwise (firefox is installed with snap, selenium is not used to that)
         driver_service = Service(executable_path=geckodriver_path)
         driver = webdriver.Firefox(options=options,service=driver_service) 
-        rxss_vulns: list[Vulnerability] = []
+        
 
 
         for payload in vulnerable_to_payloads:
             url.inject(p,payload)
             if pops_alert(str(url),driver,payload):
-                rxss_vulns.append(Vulnerability(p,str(url),payload))
+                rxss_vulns.append(Vulnerability(p,str(url),payload,type=Type.serious))
+            else:
+                rxss_vulns.append(Vulnerability(p,str(url),payload,type=Type.potential))
         driver.quit()
 
     return rxss_vulns
@@ -141,10 +144,18 @@ def scan_url_parameter_brute(url:str,p:str,depth:int,manual:bool=False,verbose:b
 
  
     
-def scan_url_whole(url:str) -> list[Vulnerability]:
+def scan_url_whole(url:str,depth:int=100) -> list[Vulnerability]:
     params = get_url_parameters(url)
-    total_xss_vulns = []
+    all_xss_vulns = []
     for p in params:
-        total_xss_vulns.append(scan_url_parameter(url,p,depth=100))
+        all_xss_vulns.extend(scan_url_parameter(url,p,depth=depth))
+    return all_xss_vulns
+    
+def scan_url_whole_brute(url:str,depth:int=100) -> list[Vulnerability]:
+    params = get_url_parameters(url)
+    all_xss_vulns: list = []
+    for p in params:
+        all_xss_vulns.extend(scan_url_parameter_brute(str(url),p,depth=depth))
+    return all_xss_vulns
     
 
