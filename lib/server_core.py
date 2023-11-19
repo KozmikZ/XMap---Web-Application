@@ -1,4 +1,5 @@
 from lib.xmap.scan_core import ScanCore
+from lib.xmap.scan_core import ScanType
 import asyncio
 import threading
 
@@ -11,9 +12,7 @@ class ServerCore: # Handling all server queries and operations
             id = 0
         else:
             id = max(self.scan_cache.keys())+1
-        scan = ScanCore(self,id)
-        scan_job = threading.Thread(target=scan.quick_scan,args=[target,]) # skinjob :*
-        scan_job.start()
+        scan = ScanCore(self,id,ScanType.quick,target)
         self.scan_cache[scan.id]=scan
         return scan.id
     def deep_scan(self,target:str) -> int:
@@ -22,9 +21,7 @@ class ServerCore: # Handling all server queries and operations
             id = 0
         else:
             id = max(self.scan_cache.keys())+1
-        scan = ScanCore(self,id)
-        scan_job = threading.Thread(target=scan.deep_scan,args=[target,])
-        scan_job.start()
+        scan = ScanCore(self,id,ScanType.deep,target)
         self.scan_cache[scan.id]=scan
         return scan.id
     def manual_scan(self,target:str,**args):

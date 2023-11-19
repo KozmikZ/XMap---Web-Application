@@ -7,7 +7,7 @@ from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
 from lib.xmap.lib.vulnerability import Vulnerability
-from lib.xmap.lib.vulnerability import Type
+from lib.xmap.lib.vulnerability import VulnerabilityType
 
 def pops_alert(url:str,driver:webdriver.Firefox,payload:str)->bool:
     """
@@ -107,9 +107,9 @@ def scan_url_parameter(url:str,p,depth:int=None)->list[Vulnerability]: # returns
         for payload in vulnerable_to_payloads:
             url.inject(p,payload)
             if pops_alert(str(url),driver,payload):
-                rxss_vulns.append(Vulnerability(p,str(url),payload,type=Type.serious))
+                rxss_vulns.append(Vulnerability(p,str(url),payload,type=VulnerabilityType.serious))
             else:
-                rxss_vulns.append(Vulnerability(p,str(url),payload,type=Type.potential))
+                rxss_vulns.append(Vulnerability(p,str(url),payload,type=VulnerabilityType.potential))
         driver.quit()
 
     return rxss_vulns
