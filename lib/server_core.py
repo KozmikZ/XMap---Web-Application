@@ -16,7 +16,7 @@ class ServerCore: # Handling all server queries and operations
         scan_job.start()
         self.scan_cache[scan.id]=scan
         return scan.id
-    def deep_scan(self,target:str):
+    def deep_scan(self,target:str) -> int:
         id : int
         if len(self.scan_cache)==0:
             id = 0

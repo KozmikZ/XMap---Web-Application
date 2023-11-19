@@ -14,7 +14,6 @@ def get_url_parameters(url:str)->dict[str,str]:
             final_params[key]=value
         return final_params
     except:
-        print(url)
         raise "What is this ^"
 
 def d_index(one,two):

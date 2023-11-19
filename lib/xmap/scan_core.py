@@ -10,6 +10,7 @@ import json
 class ScanCore: # A single object abstraction for a given scan, since it needs to be communicating with the server as it goes
     def __init__(self,server,id) -> None:
         self.metadata = {} # oop is objectively ugly and bad
+        self.scanned_targets : int= 0
         self.finished = False 
         self.vulns: list[Vulnerability] = []
         self._server = server
@@ -33,14 +34,17 @@ class ScanCore: # A single object abstraction for a given scan, since it needs t
             self.vulns.extend(scan_url_whole_brute(target_url,depth=sdepth))
         else:
             self.vulns.extend(scan_url_whole(target_url,depth=sdepth))
+        self.scanned_targets+=1
     def _attack_target_crawl(self,target_url:str,cdepth=20,sdepth=40,brute=False):
         attack_vectors = crawl_through(target_url,cdepth)
         if brute:
             for url in attack_vectors:
                 self.vulns.extend(scan_url_whole_brute(url,depth=sdepth))
+                self.scanned_targets+=1
         else:
             for url in attack_vectors:
                 self.vulns.extend(scan_url_whole(url,depth=sdepth))
+                self.scanned_targets+=1
         return self.vulns
     @get_metadata
     def deep_scan(self,target:str):
@@ -48,10 +52,10 @@ class ScanCore: # A single object abstraction for a given scan, since it needs t
     def manual_scan(self,target:str,cdepth:int,sdepth:int,brute:bool):
         ...
     def to_json(self) -> dict:
-        json_vulns = []
+        json_vulns: list = []
         for v in self.vulns:
             json_vulns.append(v.json())
-        return {"metadata":self.metadata,"vulns":json_vulns,"finished":self.finished}
+        return {"metadata":self.metadata,"vulns":json_vulns,"finished":self.finished, "scanned_targets":self.scanned_targets}
 
 def scan_test(): # function to appeal to testing driven development because I am a loser and need to get rid of women
     test = ScanCore(None)
