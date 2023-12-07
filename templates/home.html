@@ -11,30 +11,64 @@
 </head>
 <!-- In the end, change color palette to something like dark mode -->
 
-<body>
-    <nav class="navbar navbar-expand navbar-dark bg-black" id="headbar">
-        <div class="nav navbar-nav mx-3">
+<body class="bg-dark mainbg">
+    <h3 class="mx-5 my-3 shadow-lg">XMAP - Cross Site Scripting Vulnerability Scanner</h3>
+    <nav class="navbar navbar-expand navbar-dark shadow-lg" id="headbar">
+        <div class="nav navbar-nav mx-3 justify-content-around">
             <a class="nav-item nav-link active" href="#" aria-current="page" id="navtext">Home</a>
+            <a class="nav-item nav-link active" href="#" aria-current="page" id="navtext">About</a>
         </div>
     </nav>
-    <form id="scanForm" action="{{ url_for('scan_site') }}" method="post">
+    <h1 class="mt-5 text-center align-content-center"> Enter target url you want to test:</h1>
+    <form id="scanForm" action="{{ url_for('scan_site') }}" method="post"
+        class="mt-3 mx-5 p-5 text-center align-content-center ">
         <input class="form-control" name="target" id="targetBox"></input>
-        <button type="button" class="btn btn-primary" onclick="pickScan('qScan')"> Quick Scan </button>
-        <button type="button" class="btn btn-dark btn-primary" onclick="pickScan('dScan')"> Deep Scan</button>
-        <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
-            data-bs-target="#manualScanCollapseButton" aria-expanded="false" aria-controls="manualScanCollapseButton">
-            Manual Scan
-        </button>
+        <div class="m-2 p-5">
+            <button type="button" class="btn btn-light text-black px-4 py-2" onclick="pickScan('qScan')"> Quick Scan </button>
+            <button type="button" class="btn btn-dark btn-primary px-4 py-2" onclick="pickScan('dScan')"> Deep Scan</button>
+            <button class="btn btn-secondary px-4 py-2" type="button" data-bs-toggle="collapse"
+                data-bs-target="#manualScanCollapseButton" aria-expanded="false"
+                aria-controls="manualScanCollapseButton">
+                Manual Scan
+            </button>
+        </div>
         <!-- Set fixed size to this, put main more to the left?, add different fields, checkmarks? -->
         <div class="collapse" id="manualScanCollapseButton">
-            <div class="card card-body align-items-baseline">
-                <div class="container">Manual scan parameters:</div>
+            <div class="card card-body align-items-center bg-dark border-5 shadow-lg mx-5">
+                <div class="container my-3 align-items-center">
+                    <div class="m-4 font-weight-bold">
+                        Scan depth:
+                        <input class="form-control m-3 " name="scan_depth" id="sdepthin"></input>
+                    </div>
+                    <div class="m-4 font-weight-bold">
+                        Crawl depth:
+                        <input class="form-control m-3" name="crawl_depth" id="cdepthin"></input>
+                    </div>
+                    <div class="m-4 font-weight-bold">
+                        Brute:
+                        <input type="checkbox" name="brute">
+                    </div>
+                    <button type="button" class="btn btn-dark btn-primary text-white bg-dark border-white"
+                        onclick="pickScan('mScan')">Manual Scan</button>
+                </div>
             </div>
         </div>
         <input type="hidden" value="" id="scanType" name="scanType">
     </form>
     <script>
         function pickScan(type) {
+            if (document.querySelector("#targetBox").value == "") {
+                alert("Wrong input. Please enter a valid url")
+                return;
+            }
+            if (type == "mScan") {
+                let sdepthinput = document.querySelector("#sdepthin").value
+                let cdepthinput = document.querySelector("#cdepthin").value
+                if (!Number.isInteger(Number(sdepthinput)) || !Number.isInteger(Number(cdepthinput))) {
+                    alert("Wrong input. Please use whole numbers when setting crawl or scan depths");
+                    return;
+                }
+            }
             let form = document.querySelector("#scanForm");
             document.querySelector("#scanType").value = type;
             form.submit();

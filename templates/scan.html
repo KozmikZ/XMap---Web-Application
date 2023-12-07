@@ -10,17 +10,20 @@
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 </head>
 
-<body>
-    <nav class="navbar navbar-expand navbar-dark" id="headbar">
-        <div class="nav navbar-nav mx-3">
+<body class="bg-dark mainbg">
+    <h3 class="mx-5 my-3 shadow-lg">XMAP - Cross Site Scripting Vulnerability Scanner</h3>
+    <nav class="navbar navbar-expand navbar-dark shadow-lg" id="headbar">
+        <div class="nav navbar-nav mx-3 justify-content-around">
             <a class="nav-item nav-link active" href="/" aria-current="page" id="navtext">Home</a>
+            <a class="nav-item nav-link active" href="#" aria-current="page" id="navtext">About</a>
         </div>
     </nav>
     <input type="hidden" value="{{id}}" id="job_id">
+    <span class="loader justify-content-start m-5" id="loading"></span>
     <div class="container m-3 p-3" id="scan_list">
-
     </div>
-    <div class="jumbotron bg-dark" id="scan_template" style="display : none;">
+    <div class="jumbotron bg-darker mainbg border-2 shadow-lg border border-0 rounded-5 p-4" id="scan_template"
+        style="display : none;">
         <h1 class="display-4" id="vulntitle">Scanned Url</h1>
         <p class="lead" id="vulndesc">This is a simple hero unit, a simple jumbotron-style component for calling extra
             attention to
@@ -29,9 +32,16 @@
         <p id="metadata">It uses utility classes for typography and spacing to space content out within the larger
             container.</p>
         <p class="lead">
-            <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
+            <a class="btn btn-secondary btn-lg" href="#" role="button" id="viewbtn" onclick="openUrl(this.linkto)">View
+                Vulnerability</a>
         </p>
     </div>
+    <script>
+        function openUrl(url) {
+            var strWindowFeatures = "location=yes,height=570,width=520,scrollbars=yes,status=yes";
+            var win = window.open(url, "_blank", strWindowFeatures);
+        }
+    </script>
     <script>
         // For each scanned url, you use a hidden jumbotron template to create a jumbotron with the scan information
         function sleep(ms) {
@@ -42,6 +52,7 @@
         const scanList = document.getElementById("scan_list")
         async function getScanStatus() {
             finished = false
+            novulns = true;
             while (finished == false) {
                 await new Promise(r => setTimeout(r, 2000));
                 await fetch(`/scan_status?id=${jobId}`).then(response => response.json()).then(scan_status_json => {
@@ -55,15 +66,30 @@
                     }
 
                     if (scan_status_json["vulns"].length != 0) {
+                        if (novulns) {
+                            document.getElementById("loading").outerHTML = "";
+                            novulns = false;
+                        }
+                        scanList.innerHTML = ""
                         console.log(scan_status_json["vulns"])
                         for (let i = 0; i < scan_status_json["vulns"].length; i++) {
                             let vulnerability = scan_status_json["vulns"][i];
                             let jumbotronClone = document.importNode(scanJumbotronTemplate, true);
                             console.log(vulnerability["type"])
                             jumbotronClone.style = ""
-                            jumbotronClone.querySelector("#vulntitle").innerText = `Found ${vulnerability['type'].split(".")[1]} vulnerability`
-                            jumbotronClone.querySelector("#vulndesc").innerText = `Vulnerability of parameter ${vulnerability["parameter"]} in link ${vulnerability["link"]}`
-                            jumbotronClone.querySelector("#metadata").innerText = `Payload: ${vulnerability['payload']}`
+                            const vulntype = vulnerability['type'].split(".")[1];
+                            if (vulntype == "serious") {
+                                jumbotronClone.querySelector("#vulntitle").style += "color:red;";
+                                jumbotronClone.querySelector("#vulntitle").innerText = `Found ${vulntype} vulnerability`;
+                            }
+                            else {
+                                jumbotronClone.querySelector("#vulntitle").innerText = `Found ${vulntype} vulnerability`;
+                            }
+                            jumbotronClone.querySelector("#vulndesc").innerText = `Vulnerability of parameter ${vulnerability["parameter"]} in link ${vulnerability["link"]}`;
+                            jumbotronClone.querySelector("#metadata").innerText = `Payload: ${vulnerability['payload']}`;
+                            jumbotronClone.querySelector("#viewbtn")["linkto"] = `${vulnerability["link"]}`;
+
+
                             scanList.append(jumbotronClone)
                         }
                         console.log(scan_status_json);

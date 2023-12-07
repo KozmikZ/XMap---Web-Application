@@ -55,7 +55,7 @@ class ScanCore: # A single object abstraction for a given scan, since it needs t
         else:
             self.vulns.extend(scan_url_whole(target_url,depth=sdepth))
         self.scanned_targets+=1
-    def _attack_target_crawl(self,target_url:str,cdepth=20,sdepth=40,brute=False):
+    def _attack_target_crawl(self,target_url:str,cdepth=10,sdepth=80,brute=False):
         attack_vectors = crawl_through(target_url,cdepth)
         if brute:
             for url in attack_vectors:
@@ -70,7 +70,14 @@ class ScanCore: # A single object abstraction for a given scan, since it needs t
     def _deep_scan(self,target:str):
         self._attack_target_crawl(target,cdepth=60,sdepth=250,brute=True)
     def _manual_scan(self,target:str,cdepth:int,sdepth:int,brute:bool):
-        ...
+        attack_vectors = crawl_through(target,cdepth)
+        for url in attack_vectors:
+            if brute:
+                self.vulns.extend(scan_url_whole_brute(url,sdepth))
+            else:
+                self.vulns.extend(scan_url_whole(url,sdepth))
+            self.scanned_targets+=1
+        return self.vulns
     def to_json(self) -> dict:
         json_vulns: list = []
         for v in self.vulns:

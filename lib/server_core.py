@@ -24,7 +24,14 @@ class ServerCore: # Handling all server queries and operations
         scan = ScanCore(self,id,ScanType.deep,target)
         self.scan_cache[scan.id]=scan
         return scan.id
-    def manual_scan(self,target:str,**args):
-        ...
+    def manual_scan(self,target:str,cdepth:int,sdepth:int,brute:bool):
+        id : int
+        if len(self.scan_cache)==0:
+            id = 0
+        else:
+            id = max(self.scan_cache.keys())+1
+        scan = ScanCore(self,id,ScanType.manual,target,[cdepth,sdepth,brute])
+        self.scan_cache[scan.id]=scan
+        return scan.id
     def get_running_scan(self,id:int): # returns the scan with this cached id
         return self.scan_cache[id]
