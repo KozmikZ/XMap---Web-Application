@@ -19,9 +19,10 @@
         </div>
     </nav>
     <input type="hidden" value="{{id}}" id="job_id">
-    <span class="loader justify-content-start m-5" id="loading"></span>
+
     <div class="container m-3 p-3" id="scan_list">
     </div>
+    <span class="loader justify-content-start m-5" id="loading"></span>
     <div class="jumbotron bg-darker mainbg border-2 shadow-lg border border-0 rounded-5 p-4" id="scan_template"
         style="display : none;">
         <h1 class="display-4" id="vulntitle">Scanned Url</h1>
@@ -52,7 +53,6 @@
         const scanList = document.getElementById("scan_list")
         async function getScanStatus() {
             finished = false
-            novulns = true;
             while (finished == false) {
                 await new Promise(r => setTimeout(r, 2000));
                 await fetch(`/scan_status?id=${jobId}`).then(response => response.json()).then(scan_status_json => {
@@ -60,39 +60,43 @@
                     // do not forget to progressively fill the UI with info that the scan gathers
                     if (scan_status_json["finished"]) {
                         finished = true
+                        document.getElementById("loading").outerHTML = "";
                     }
                     else {
                         console.log("Operation not finished yet")
                     }
 
                     if (scan_status_json["vulns"].length != 0) {
-                        if (novulns) {
-                            document.getElementById("loading").outerHTML = "";
-                            novulns = false;
-                        }
                         scanList.innerHTML = ""
-                        console.log(scan_status_json["vulns"])
+                        let seriousVulns = [];
+                        let potentialVulns = [];
+
                         for (let i = 0; i < scan_status_json["vulns"].length; i++) {
                             let vulnerability = scan_status_json["vulns"][i];
                             let jumbotronClone = document.importNode(scanJumbotronTemplate, true);
-                            console.log(vulnerability["type"])
                             jumbotronClone.style = ""
                             const vulntype = vulnerability['type'].split(".")[1];
-                            if (vulntype == "serious") {
-                                jumbotronClone.querySelector("#vulntitle").style += "color:red;";
-                                jumbotronClone.querySelector("#vulntitle").innerText = `Found ${vulntype} vulnerability`;
-                            }
-                            else {
-                                jumbotronClone.querySelector("#vulntitle").innerText = `Found ${vulntype} vulnerability`;
-                            }
                             jumbotronClone.querySelector("#vulndesc").innerText = `Vulnerability of parameter ${vulnerability["parameter"]} in link ${vulnerability["link"]}`;
                             jumbotronClone.querySelector("#metadata").innerText = `Payload: ${vulnerability['payload']}`;
                             jumbotronClone.querySelector("#viewbtn")["linkto"] = `${vulnerability["link"]}`;
-
-
-                            scanList.append(jumbotronClone)
+                            if (vulntype == "serious") {
+                                console.log(vulntype)
+                                jumbotronClone.querySelector("#vulntitle").style += "color:red;";
+                                jumbotronClone.querySelector("#vulntitle").innerText = `Found ${vulntype} vulnerability`;
+                                seriousVulns.push(jumbotronClone)
+                            }
+                            else {
+                                console.log(vulntype)
+                                jumbotronClone.querySelector("#vulntitle").innerText = `Found ${vulntype} vulnerability`;
+                                potentialVulns.push(jumbotronClone);
+                            }
                         }
-                        console.log(scan_status_json);
+                        seriousVulns.forEach(function (x) {
+                            scanList.append(x);
+                        })
+                        potentialVulns.forEach(function (x) {
+                            scanList.append(x)
+                        })
                     }
                 }).catch(error => console.log(error));
             }
