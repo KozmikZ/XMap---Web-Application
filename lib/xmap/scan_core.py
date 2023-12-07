@@ -83,16 +83,3 @@ class ScanCore: # A single object abstraction for a given scan, since it needs t
         for v in self.vulns:
             json_vulns.append(v.json())
         return {"metadata":self.metadata,"vulns":json_vulns,"finished":self.finished, "scanned_targets":self.scanned_targets}
-
-
-
-
-
-
-
-def scan_test(): # function to appeal to testing driven development because I am a loser and need to get rid of women
-    test = ScanCore(None)
-    test._quick_scan("http://sudo.co.il/xss/level5-2.php?p=test")
-    print(test.vulns)
-    for x in test.vulns:
-        print(x.json())

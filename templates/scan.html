@@ -81,7 +81,7 @@
                             jumbotronClone.querySelector("#viewbtn")["linkto"] = `${vulnerability["link"]}`;
                             if (vulntype == "serious") {
                                 console.log(vulntype)
-                                jumbotronClone.querySelector("#vulntitle").style += "color:red;";
+                                jumbotronClone.querySelector("#vulntitle").style.color = "red";
                                 jumbotronClone.querySelector("#vulntitle").innerText = `Found ${vulntype} vulnerability`;
                                 seriousVulns.push(jumbotronClone)
                             }
