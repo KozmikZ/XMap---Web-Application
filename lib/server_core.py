@@ -1,7 +1,5 @@
 from lib.xmap.scan_core import ScanCore
 from lib.xmap.scan_core import ScanType
-import asyncio
-import threading
 
 class ServerCore: # Handling all server queries and operations
     def __init__(self) -> None:

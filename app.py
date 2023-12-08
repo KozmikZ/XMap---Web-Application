@@ -1,6 +1,4 @@
 from flask import Flask,render_template,request,jsonify
-import threading
-import asyncio
 from lib.server_core import ServerCore
 from lib.xmap.scan_core import ScanCore
 application = Flask(__name__,template_folder='templates',static_url_path='',static_folder='templates/static')

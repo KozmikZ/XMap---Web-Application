@@ -1,5 +1,5 @@
 from random import choice
-import time
+
 def get_url_parameters(url:str)->dict[str,str]: # Obtains a dictionary of url arguments f. ex. {'q':'query'}
     if "=" not in url:
         return []

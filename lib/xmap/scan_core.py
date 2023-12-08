@@ -3,7 +3,6 @@ from lib.xmap.lib.crawl import crawl_through
 from lib.xmap.lib.vulnerability import Vulnerability
 from datetime import datetime as dt
 import functools
-import json
 from enum import Enum
 import threading
 
