@@ -11,7 +11,7 @@ class ScanType(Enum):
     deep = "deep"
     manual = "manual"
     quick = "quick"
-# TODO possible way to communicate with the server would be by use of a server state update method and passing the server object
+
 
 class ScanCore: # A single object abstraction for a given scan, since it needs to be communicating with the server as it goes
     def __init__(self,server,id:int,type:ScanType,target:str,params:list=[]) -> None:
@@ -25,7 +25,7 @@ class ScanCore: # A single object abstraction for a given scan, since it needs t
         self.type = type
         self.target = target
         self.start_scan()
-    def start_scan(self):
+    def start_scan(self): # the first function that is always called in the initializer of every ScanCore object, that decides which scan is to be run
         if self.type == ScanType.deep:
             deep_job = threading.Thread(target=self._deep_scan,args=[self.target,])
             deep_job.start()
@@ -50,7 +50,7 @@ class ScanCore: # A single object abstraction for a given scan, since it needs t
     def _quick_scan(self,target:str):
         self._attack_target_crawl(target_url=target)
     def _attack_target_single(self,target_url:str,sdepth=40,brute=False):
-        if brute: # this code is starting to look like shit...
+        if brute:
             self.vulns.extend(scan_url_whole_brute(target_url,depth=sdepth))
         else:
             self.vulns.extend(scan_url_whole(target_url,depth=sdepth))
@@ -78,7 +78,7 @@ class ScanCore: # A single object abstraction for a given scan, since it needs t
                 self.vulns.extend(scan_url_whole(url,sdepth))
             self.scanned_targets+=1
         return self.vulns
-    def to_json(self) -> dict:
+    def to_json(self) -> dict: 
         json_vulns: list = []
         for v in self.vulns:
             json_vulns.append(v.json())

@@ -2,14 +2,7 @@ import urllib3
 import bs4
 from lib.xmap.lib.utils import rndhead,get_url_parameters
 from lib.xmap.lib.url import Url
-"""
-The neutron crawler, spreads like a fission reaction...
-"""
 
-
-# A breadth first search implementation of a crawler
-
-# lets start with a single crawling sequence
 
 def scrape_links(url:str,domain:str): # scrapes all links on a single page that are part of the domain
     response = urllib3.request("GET",url,headers={"User-Agent":rndhead()})
@@ -46,7 +39,7 @@ def crawl_through(inp_start_page:str,depth=100): # scrapes a domain for sites wi
                 if visited.get(x)!=True: # if we have checked this url, don't add it
                     visited[x]=True 
                     queue.append(x)
-                    if "=" in x:
+                    if "=" in x: # are there parameters?
                         inj = Url(x) # Set up a url object
                         for x in inj.injection_parameters: # create a repr with empty parameters
                             inj.inject(x,"")
@@ -55,10 +48,7 @@ def crawl_through(inp_start_page:str,depth=100): # scrapes a domain for sites wi
                             injectable_pages[injstr]=True
             except:
                 pass
-                #print("Passing on failed attempt to check during crawling")
     return injectable_pages
             
     
     
-# ok, this probably isn't the way?
-# we are not getting any links with reasonable parameters

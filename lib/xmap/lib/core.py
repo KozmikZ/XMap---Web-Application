@@ -100,8 +100,10 @@ def scan_url_parameter(url:str,p,depth:int=None)->list[Vulnerability]: # returns
         options.add_argument("--incognito")
         geckodriver_path = "/snap/bin/geckodriver"  # specify the path to your geckodriver -> unfortunately have to do that since it cannot find it otherwise (firefox is installed with snap, selenium is not used to that)
         driver_service = Service(executable_path=geckodriver_path)
-        driver = webdriver.Firefox(options=options,service=driver_service) 
-        
+        try:
+            driver = webdriver.Firefox(options=options,service=driver_service) 
+        except:
+            driver = webdriver.Firefox(options=options)        
 
 
         for payload in vulnerable_to_payloads:
@@ -124,7 +126,10 @@ def scan_url_parameter_brute(url:str,p:str,depth:int,manual:bool=False,verbose:b
     options.add_argument("--incognito")
     geckodriver_path = "/snap/bin/geckodriver"  # specify the path to your geckodriver -> unfortunately have to do that since it cannot find it otherwise (firefox is installed with snap, selenium is not used to that)
     driver_service = Service(executable_path=geckodriver_path)
-    driver = webdriver.Firefox(options=options,service=driver_service) 
+    try:
+        driver = webdriver.Firefox(options=options,service=driver_service) 
+    except:
+        driver = webdriver.Firefox(options=options)        
     rxss_vulns: list[str] = []
 
     test_payloads = open("lib/xmap/lib/payloads/payload_list.txt","r").readlines()
@@ -144,14 +149,14 @@ def scan_url_parameter_brute(url:str,p:str,depth:int,manual:bool=False,verbose:b
 
  
     
-def scan_url_whole(url:str,depth:int=100) -> list[Vulnerability]:
+def scan_url_whole(url:str,depth:int=100) -> list[Vulnerability]: # scan all parameters of a url
     params = get_url_parameters(url)
     all_xss_vulns = []
     for p in params:
         all_xss_vulns.extend(scan_url_parameter(url,p,depth=depth))
     return all_xss_vulns
     
-def scan_url_whole_brute(url:str,depth:int=100) -> list[Vulnerability]:
+def scan_url_whole_brute(url:str,depth:int=100) -> list[Vulnerability]: # brute scan all parameters of a url
     params = get_url_parameters(url)
     all_xss_vulns: list = []
     for p in params:

@@ -1,6 +1,6 @@
 from random import choice
 import time
-def get_url_parameters(url:str)->dict[str,str]:
+def get_url_parameters(url:str)->dict[str,str]: # Obtains a dictionary of url arguments f. ex. {'q':'query'}
     if "=" not in url:
         return []
     try:
@@ -14,16 +14,10 @@ def get_url_parameters(url:str)->dict[str,str]:
             final_params[key]=value
         return final_params
     except:
-        raise "What is this ^"
+        return [] # if something goes wrong, act like nothing ever existed
 
-def d_index(one,two):
-    score = 0
-    for x,y in zip(one,two):
-        if x!=y:
-            score+=1
-    return score
 
-def rndhead()->dict:
+def rndhead()->str: # returns a random user agent
     headers_list = [
     {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:90.0) Gecko/20100101 Firefox/90.0'},
     {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'},
@@ -35,10 +29,3 @@ def rndhead()->dict:
     {'User-Agent': 'Mozilla/5.0 (Windows Phone 10.0; Android 6.0.1; Microsoft; Lumia 950) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Mobile Safari/537.36 Edge/15.14900'}
     ]
     return choice(headers_list)['User-Agent']
-
-def performance(func,*args):
-    print("Testing performance of function",func)
-    m = time.time()
-    func(*args)
-    m = time.time() - m
-    print(str(m)+" seconds")
