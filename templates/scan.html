@@ -15,10 +15,19 @@
     <nav class="navbar navbar-expand navbar-dark shadow-lg" id="headbar">
         <div class="nav navbar-nav mx-3 justify-content-around">
             <a class="nav-item nav-link active" href="/" aria-current="page" id="navtext">Home</a>
-            <a class="nav-item nav-link active" href="#" aria-current="page" id="navtext">About</a>
+            <a class="nav-item nav-link active" href="/about" aria-current="page" id="navtext">About</a>
         </div>
     </nav>
     <input type="hidden" value="{{id}}" id="job_id">
+    <div class="p-5 m-5 bg-dark rounded-4 mainbg shadow-lg" id="scan_info" style="display : none;">
+        <div class="container-fluid py-5">
+            <h1 class="display-5 fw-bold">Scan finished</h1>
+            <p class="col-md-4 fs-4" id="runtime"></p>
+            <p class="col-md-4 fs-4" id="targets"></p>
+            <p class="col-md-4 fs-4" id="vulncount"></p>
+        </div>
+    </div>
+    
 
     <div class="container m-3 p-3" id="scan_list">
     </div>
@@ -61,6 +70,11 @@
                     if (scan_status_json["finished"]) {
                         finished = true
                         document.getElementById("loading").outerHTML = "";
+                        let infotron = document.getElementById("scan_info");
+                        infotron.style.display="block";
+                        document.getElementById("runtime").innerText=`Runtime: ${scan_status_json['metadata']['runtime']}`
+                        document.getElementById("targets").innerText=`Scanned targets: ${scan_status_json['scanned_targets']}`
+                        document.getElementById("vulncount").innerText = `Number of vulnerabilities found: ${scan_status_json['vulns'].length}`
                     }
                     else {
                         console.log("Operation not finished yet")

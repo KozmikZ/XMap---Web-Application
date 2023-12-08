@@ -68,6 +68,7 @@ class ScanCore: # A single object abstraction for a given scan, since it needs t
     @get_metadata
     def _deep_scan(self,target:str):
         self._attack_target_crawl(target,cdepth=60,sdepth=250,brute=True)
+    @get_metadata
     def _manual_scan(self,target:str,cdepth:int,sdepth:int,brute:bool):
         attack_vectors = crawl_through(target,cdepth)
         for url in attack_vectors:

@@ -142,7 +142,7 @@ def scan_url_parameter_brute(url:str,p:str,depth:int,manual:bool=False,verbose:b
         if payloads_tested%10==0:
             pass
         if pops_alert(str(url),driver,payload):
-            rxss_vulns.append(Vulnerability(p,str(url),payload))
+            rxss_vulns.append(Vulnerability(p,str(url),payload,type=VulnerabilityType.serious))
     driver.quit()
     return rxss_vulns
 

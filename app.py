@@ -9,7 +9,7 @@ def home():
     return render_template("home.html")
 
 @application.route("/scan_site",methods=["GET","POST"])
-def scan_site():
+def scan_site(): # route where your scan gets visualized
     print(f"Scanning site {request.form['target']}")
     scan_type = request.form.get("scanType")
     id : int
@@ -32,6 +32,10 @@ def scan_site():
 def scan_status(): # this returns a json scan object to the user, in which will be all the currently available data about scanned targets so far
     scan: ScanCore = server.get_running_scan(int(request.args["id"]))
     return jsonify(scan.to_json())
+
+@application.route('/about',methods=["GET"])
+def about():
+    return render_template('about.html')
 
 if __name__=="__main__":
     application.run(debug=True)
