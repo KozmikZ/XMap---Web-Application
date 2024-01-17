@@ -1,14 +1,14 @@
-import urllib3
+import requests
 import bs4
 from lib.xmap.lib.utils import rndhead,get_url_parameters
 from lib.xmap.lib.url import Url
 
 
 def scrape_links(url:str,domain:str): # scrapes all links on a single page that are part of the domain
-    response = urllib3.request("GET",url,headers={"User-Agent":rndhead()})
+    response = requests.get(url,headers={"User-Agent":rndhead()})
     links : list[str] = []
-    if response.status==200:
-        site = bs4.BeautifulSoup(response.data,'html.parser')
+    if response.status_code==200:
+        site = bs4.BeautifulSoup(response.content,'html.parser')
         anchors = site.find_all("a" or "li")
         for a in anchors:
             href:str = a.attrs.get("href")
@@ -22,8 +22,14 @@ def scrape_links(url:str,domain:str): # scrapes all links on a single page that 
                     links.append(domain+"/"+href)
     return links
 
-def crawl_through(inp_start_page:str,depth=100): # scrapes a domain for sites with parameters
-    domain = inp_start_page.split("//")[0]+"//"+inp_start_page.split("//")[1].split("/")[0]
+def crawl_through(inp_start_page:str,depth=100,console=False) -> list[str]: # scrapes a domain for sites with parameters
+    try:
+        domain = inp_start_page.split("//")[0]+"//"+inp_start_page.split("//")[1].split("/")[0]
+    except:
+        raise(BaseException("Failed to parse target website url, check for typos"))
+    if console: # if we are running this in console
+        print(f"Crawling starting from website {inp_start_page}")
+        print(f"With max depth of {depth} pages")
     visited = {} # bfs variables...
     queue: list[str] = [inp_start_page]
     injectable_pages = {}
@@ -31,6 +37,7 @@ def crawl_through(inp_start_page:str,depth=100): # scrapes a domain for sites wi
         injectable_pages[inp_start_page]=True
     dpmeter = 0
     while len(queue)>0 and dpmeter<depth:
+        print(f"Depth reached: {dpmeter}",end='\r') # update terminal line
         dpmeter+=1
         currently_on = queue.pop(0)
         links = scrape_links(currently_on,domain)
@@ -39,7 +46,7 @@ def crawl_through(inp_start_page:str,depth=100): # scrapes a domain for sites wi
                 if visited.get(x)!=True: # if we have checked this url, don't add it
                     visited[x]=True 
                     queue.append(x)
-                    if "=" in x: # are there parameters?
+                    if "=" in x:
                         inj = Url(x) # Set up a url object
                         for x in inj.injection_parameters: # create a repr with empty parameters
                             inj.inject(x,"")
@@ -47,7 +54,8 @@ def crawl_through(inp_start_page:str,depth=100): # scrapes a domain for sites wi
                         if injectable_pages.get(injstr)!=True: # look if it's already been added
                             injectable_pages[injstr]=True
             except:
-                pass
+                if console:
+                    print("Passing on failed attempt to check during crawling")
     return injectable_pages
             
     
