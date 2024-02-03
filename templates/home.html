@@ -59,15 +59,24 @@
     </form>
     <script>
         function pickScan(type) {
-            if (document.querySelector("#targetBox").value == "") {
+            let url = document.querySelector("#targetBox").value;
+            if (url == "" || (!url.includes("https://") && !url.includes("http://"))) { // testing if the url is valid
                 alert("Wrong input. Please enter a valid url")
                 return;
             }
             if (type == "mScan") {
                 let sdepthinput = document.querySelector("#sdepthin").value
                 let cdepthinput = document.querySelector("#cdepthin").value
-                if (!Number.isInteger(Number(sdepthinput)) || !Number.isInteger(Number(cdepthinput))) {
+                if (!Number.isInteger(Number(sdepthinput)) || !Number.isInteger(Number(cdepthinput))) { // correction of input
                     alert("Wrong input. Please use whole numbers when setting crawl or scan depths");
+                    return;
+                }
+                else if (cdepthinput > 1000) {
+                    alert("Crawl depth limit reached");
+                    return;
+                }
+                else if (sdepthinput >= 2500) {
+                    alert("Scan depth limit reached");
                     return;
                 }
             }

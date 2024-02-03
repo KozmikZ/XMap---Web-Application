@@ -22,7 +22,10 @@ def pops_alert(url:str,driver:webdriver.Firefox,payload:str)->bool:
     Opens a url in a webdriver and then checks if it can switch its focus to the alert box
     If there is no alert/prompt box, an exception raised and pops_alert returns False
     """
-    driver.get(url)
+    try:
+        driver.get(url)
+    except:
+        return False
     try: # try to check for an alert, an exception will be raised if no alert is found
         al = driver.switch_to.alert 
         al.dismiss() # to enable more browser get requests
