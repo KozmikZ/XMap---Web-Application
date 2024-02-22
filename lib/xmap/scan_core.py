@@ -46,15 +46,15 @@ class ScanCore: # A single object abstraction for a given scan, since it needs t
             self.finished=True
         return wrap
     @get_metadata
-    def _quick_scan(self,target:str):
+    def _quick_scan(self,target:str): # a simple scan with a low crawl and scan depth
         self._attack_target_crawl(target_url=target)
-    def _attack_target_single(self,target_url:str,sdepth=40,brute=False):
+    def _attack_target_single(self,target_url:str,sdepth=40,brute=False): # the executed attack on a single target
         if brute:
             self.vulns.extend(ServerScanner.scan_url_whole_brute(target_url,depth=sdepth))
         else:
             self.vulns.extend(ServerScanner.scan_url_whole(target_url,depth=sdepth))
         self.scanned_targets+=1
-    def _attack_target_crawl(self,target_url:str,cdepth=10,sdepth=80,brute=False):
+    def _attack_target_crawl(self,target_url:str,cdepth=10,sdepth=80,brute=False): # executed attack on multiple targets gathered with crawling
         attack_vectors = crawl_through(target_url,cdepth)
         if brute:
             for url in attack_vectors:
@@ -66,10 +66,10 @@ class ScanCore: # A single object abstraction for a given scan, since it needs t
                 self.scanned_targets+=1
         return self.vulns
     @get_metadata
-    def _deep_scan(self,target:str):
+    def _deep_scan(self,target:str): 
         self._attack_target_crawl(target,cdepth=60,sdepth=250,brute=True)
     @get_metadata
-    def _manual_scan(self,target:str,cdepth:int,sdepth:int,brute:bool):
+    def _manual_scan(self,target:str,cdepth:int,sdepth:int,brute:bool): # a parameter defined scan
         attack_vectors = crawl_through(target,cdepth)
         for url in attack_vectors:
             if brute:
@@ -78,7 +78,7 @@ class ScanCore: # A single object abstraction for a given scan, since it needs t
                 self.vulns.extend(ServerScanner.scan_url_whole(url,sdepth))
             self.scanned_targets+=1
         return self.vulns
-    def to_json(self) -> dict: 
+    def to_json(self) -> dict: # converts this scan to a json object that can then be polled for
         json_vulns: list[Vulnerability] = []
         for v in self.vulns:
             json_vulns.append(v.json())

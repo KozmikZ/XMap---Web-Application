@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""The CLI Equivalent of XMAP"""
 import argparse
 from lib.xmap.lib.crawl import crawl_through
 from lib.xmap.lib.url import Url
@@ -44,7 +45,7 @@ if user_args.crawl:
         print("Found possible attack vectors",*["\n"+i for i in injectable_urls])
     total_xss_vulnerabilities: list = [] # a list of the final vulnerability objects
     
-    for link in injectable_urls:
+    for link in injectable_urls: # testing all the gathered urls
         link = Url(link)
         for p in link.injection_parameters:
             if user_args.brute:
@@ -70,8 +71,8 @@ else:
         else:
             for v in ConsoleScanner.scan_url_parameter(str(url),user_args.parameter,depth=sdepth,verbose=user_args.verbose,manual=user_args.manual,payload_list_path=user_args.payload_list):
                 total_xss_vulnerabilities.append(v)
-    else: # all parameter scanning
-        for p in url.injection_parameters: 
+    else: # multiple parameter scanning
+        for p in url.injection_parameters:  
             if user_args.brute:
                 for v in ConsoleScanner.scan_url_parameter_brute(str(url),p,depth=sdepth,verbose=user_args.verbose,manual=user_args.manual,payload_list_path=user_args.payload_list):
                     total_xss_vulnerabilities.append(v)

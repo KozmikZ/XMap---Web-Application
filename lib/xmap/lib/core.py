@@ -17,6 +17,8 @@ MAX_TOLERANCE = 30 # tolerance of unaccepted requests
 LOCATOR_STRING = "sL3a" # used to locate reflected payloads with regex
 TERMINATOR_STRING ="4jQn"
 
+"""The following are functions generally useful for both scanners"""
+
 def pops_alert(url:str,driver:webdriver.Firefox,payload:str)->bool:
     """
     Opens a url in a webdriver and then checks if it can switch its focus to the alert box
@@ -43,7 +45,6 @@ def pops_alert(url:str,driver:webdriver.Firefox,payload:str)->bool:
                 except:
                     pass
         return False
-
 
 def reflects(url:str,p:str)->bool: # test if any parameter reflects on site:
     url:Url = Url(url)
@@ -137,7 +138,7 @@ class ServerScanner:
         s_v.extend(p_v)
         return s_v
 
-    def scan_url_parameter_brute(url:str,p:str,depth:int)->list[str]:
+    def scan_url_parameter_brute(url:str,p:str,depth:int)->list[str]: # returns all the urls of type serious found by the brute scan
         if not reflects(url,p):
             return []
         
@@ -164,7 +165,7 @@ class ServerScanner:
         return all_xss_vulns
 
 
-class ConsoleScanner:
+class ConsoleScanner: # The console scanner has a bit of a different architecture than the Server scanner
     def scan_url_parameter(url:str,p,depth:int=None,manual:bool=False,verbose:bool=False,payload_list_path:str="lib/xmap/lib/payloads/payload_list.txt")->list[str]: # returns all working rxss links for a given parameter and url
         """
         I use the payload list file to test every payloads reflection (depending on the depth, a number of payloads is tested)
