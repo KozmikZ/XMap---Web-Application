@@ -6,7 +6,7 @@ The most basic form of the command entered is as follows:
 ```bash
 python3 cli.py -t "URL"
 ```
-This command performs the most ordinary scan of a website for all URL parameters. The "t" parameter here represents "target," and for XMAP, it's the only necessary parameter in the case of a quick scan. XMAP will find the most important confirmed vulnerabilities in the fastest way and report to the user in the following form:
+This command performs the most ordinary scan of a website for all URL parameters. The "t" parameter here represents "target," and for XMAP, it's the only necessary parameter in the case of a quick scan. XMAP will find the most important confirmed vulnerabilities in the fastest way and report to the user.
 
 **Alternatively**, the tool can be run with the "b" parameter:
 
