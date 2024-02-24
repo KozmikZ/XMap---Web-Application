@@ -29,7 +29,7 @@ This command scans the page and its paths at level 2. This means it goes through
     --log = path to the log file into which XMAP should write both results and the scanning process
     --payload_list = path to the file of payloads that the user wants to use for their scan. If this argument is not specified, the basic one is used.
     
-## 2.2 Web Application Documentation
+## Web Application Documentation
 In the case of a web application, the user has several options for using it. The simplest way to launch the application is to download the Git repository and start it in a local web environment using the command:
 ```bash
 flask run
