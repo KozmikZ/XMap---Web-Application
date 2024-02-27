@@ -13,7 +13,8 @@ class ServerCore: # Handling all server queries and operations
         scan = ScanCore(self,id,ScanType.quick,target)
         self.scan_cache[scan.id]=scan
         return scan.id
-    def deep_scan(self,target:str) -> int: # tries a deep scan on the server
+    # tries a deep scan on the server
+    def deep_scan(self,target:str) -> int: 
         id : int
         if len(self.scan_cache)==0: # first in hashmap?
             id = 0 
@@ -22,7 +23,8 @@ class ServerCore: # Handling all server queries and operations
         scan = ScanCore(self,id,ScanType.deep,target)
         self.scan_cache[scan.id]=scan
         return scan.id
-    def manual_scan(self,target:str,cdepth:int,sdepth:int,brute:bool): # tries a manual scan on the server
+    # tries a manual scan on the server
+    def manual_scan(self,target:str,cdepth:int,sdepth:int,brute:bool): 
         id : int
         if len(self.scan_cache)==0: # first in hashmap?
             id = 0
@@ -31,5 +33,6 @@ class ServerCore: # Handling all server queries and operations
         scan = ScanCore(self,id,ScanType.manual,target,[cdepth,sdepth,brute])
         self.scan_cache[scan.id]=scan
         return scan.id
-    def get_running_scan(self,id:int): # returns the scan with this cached id
-        return self.scan_cache[id]
+    # returns the scan with this cached id
+    def get_running_scan(self,id:int): 
+        return self.scan_cache.get(id)

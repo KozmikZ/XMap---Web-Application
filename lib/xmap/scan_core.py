@@ -82,4 +82,4 @@ class ScanCore: # A single object abstraction for a given scan, since it needs t
         json_vulns: list[Vulnerability] = []
         for v in self.vulns:
             json_vulns.append(v.json())
-        return {"metadata":self.metadata,"vulns":json_vulns,"finished":self.finished, "scanned_targets":self.scanned_targets}
+        return {"metadata":self.metadata,"vulns":json_vulns,"finished":self.finished, "scanned_targets":self.scanned_targets, "failed":False}

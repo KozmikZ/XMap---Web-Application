@@ -65,8 +65,10 @@
             while (finished == false) {
                 await new Promise(r => setTimeout(r, 2000));
                 await fetch(`/scan_status?id=${jobId}`).then(response => response.json()).then(scan_status_json => {
-                    console.log(scan_status_json);
                     // do not forget to progressively fill the UI with info that the scan gathers
+                    if(scan_status_json["failed"]){
+                        alert("Scan failed completely, please try again");
+                    }
                     if (scan_status_json["finished"]) {
                         finished = true
                         document.getElementById("loading").outerHTML = "";

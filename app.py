@@ -30,7 +30,9 @@ def scan_site(): # route where your scan gets visualized
 
 @application.route("/scan_status",methods=["GET"])
 def scan_status(): # this returns a json scan object to the user, in which will be all the currently available data about scanned targets so far
-    scan: ScanCore = server.get_running_scan(int(request.args["id"]))
+    scan: ScanCore | None = server.get_running_scan(int(request.args["id"]))
+    if scan==None:
+        return jsonify({"failed":True})
     return jsonify(scan.to_json())
 
 @application.route('/about',methods=["GET"])
