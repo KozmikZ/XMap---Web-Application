@@ -8,8 +8,9 @@ server = ServerCore()
 def home():
     return render_template("home.html")
 
+# route where your scan gets visualized
 @application.route("/scan_site",methods=["GET","POST"])
-def scan_site(): # route where your scan gets visualized
+def scan_site(): 
     print(f"Scanning site {request.form['target']}")
     scan_type = request.form.get("scanType")
     id : int
@@ -28,8 +29,9 @@ def scan_site(): # route where your scan gets visualized
         id = server.manual_scan(request.form['target'],cdepth,sdepth,brute)
     return render_template('scan.html',id=id)
 
+# this returns a json scan object to the user, in which will be all the currently available data about scanned targets so far
 @application.route("/scan_status",methods=["GET"])
-def scan_status(): # this returns a json scan object to the user, in which will be all the currently available data about scanned targets so far
+def scan_status(): 
     scan: ScanCore | None = server.get_running_scan(int(request.args["id"]))
     if scan==None:
         return jsonify({"failed":True})
@@ -39,6 +41,6 @@ def scan_status(): # this returns a json scan object to the user, in which will 
 def about():
     return render_template('about.html')
 
-if __name__=="__main__":
-    application.run(debug=True)
+if __name__ == '__main__':
+    application.run(host='0.0.0.0', port=8080)
 
