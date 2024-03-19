@@ -46,7 +46,8 @@ def pops_alert(url:str,driver:webdriver.Firefox,payload:str)->bool:
                     pass
         return False
 
-def reflects(url:str,p:str)->bool: # test if any parameter reflects on site:
+def reflects(url:str,p:str)->bool: 
+    # test if any parameter reflects on site:
     url:Url = Url(url)
     url.inject(p,"rXn4rT") # injecting the payload into the url
     resp = requests.get(url.__repr__(),headers={"User-Agent":rndhead()})
@@ -56,7 +57,8 @@ def reflects(url:str,p:str)->bool: # test if any parameter reflects on site:
     else:
         return True
 
-def setup_firefox_driver(): # setting up the webdriver, so we dont have to reopen it everytime a payload is tested
+def setup_firefox_driver(): 
+    # setting up the webdriver, so we dont have to reopen it everytime a payload is tested
     options = Options() 
     options.add_argument('--headless')
     options.add_argument("--incognito")
@@ -82,7 +84,8 @@ def brute_force_page(url:str,p,payloads:list[str],driver:webdriver.Firefox)->dic
     return rxss_vulns
 
 class ServerScanner:
-    def scan_url_parameter(url:str,p,depth:int=None)->list[Vulnerability]: # returns all working rxss links for a given parameter and url
+    def scan_url_parameter(url:str,p,depth:int=None)->list[Vulnerability]: 
+        # returns all working rxss links for a given parameter and url
         """
         I use the payload list file to test every payloads reflection (depending on the depth, a number of payloads is tested)
         I then check for exact reflections in the site, those not tampered with by the back-end/front-end
@@ -138,7 +141,8 @@ class ServerScanner:
         s_v.extend(p_v)
         return s_v
 
-    def scan_url_parameter_brute(url:str,p:str,depth:int)->list[str]: # returns all the urls of type serious found by the brute scan
+    def scan_url_parameter_brute(url:str,p:str,depth:int)->list[str]:
+        # returns all the urls of type serious found by the brute scan
         if not reflects(url,p):
             return []
         
@@ -150,7 +154,8 @@ class ServerScanner:
         driver.quit()
         return rxss_vulns[VulnerabilityType.serious]
     
-    def scan_url_whole(url:str,depth:int=100) -> list[Vulnerability]: # scan all parameters of a url
+    def scan_url_whole(url:str,depth:int=100) -> list[Vulnerability]: 
+        # scan all parameters of a url
         params = get_url_parameters(url)
         all_xss_vulns = []
         for p in params:

@@ -1,6 +1,7 @@
 from random import choice
 
-def get_url_parameters(url:str)->dict[str,str]: # Obtains a dictionary of url arguments f. ex. {'q':'query'}
+def get_url_parameters(url:str)->dict[str,str]: 
+    # Obtains a dictionary of url arguments f. ex. {'q':'query'}
     if "=" not in url:
         return []
     try:
@@ -17,7 +18,8 @@ def get_url_parameters(url:str)->dict[str,str]: # Obtains a dictionary of url ar
         return [] # if something goes wrong, act like nothing ever existed
 
 
-def rndhead()->str: # returns a random user agent
+def rndhead()->str: 
+    # returns a random user agent
     headers_list = [
     {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:90.0) Gecko/20100101 Firefox/90.0'},
     {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'},

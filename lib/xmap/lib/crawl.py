@@ -4,7 +4,8 @@ from lib.xmap.lib.utils import rndhead,get_url_parameters
 from lib.xmap.lib.url import Url
 
 
-def scrape_links(url:str,domain:str): # scrapes all links on a single page that are part of the domain
+def scrape_links(url:str,domain:str): 
+    # scrapes all links on a single page that are part of the domain
     response = requests.get(url,headers={"User-Agent":rndhead()})
     links : list[str] = []
     if response.status_code==200:
@@ -22,7 +23,8 @@ def scrape_links(url:str,domain:str): # scrapes all links on a single page that 
                     links.append(domain+"/"+href)
     return links
 
-def crawl_through(inp_start_page:str,depth=100,console=False) -> list[str]: # scrapes a domain for sites with parameters
+def crawl_through(inp_start_page:str,depth=100,console=False) -> list[str]: 
+    # scrapes a domain for sites with parameters
     try:
         domain = inp_start_page.split("//")[0]+"//"+inp_start_page.split("//")[1].split("/")[0]
     except:
