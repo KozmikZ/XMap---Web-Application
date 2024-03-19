@@ -38,7 +38,7 @@ else:
 
 if user_args.crawl:
     # Testing a full website scan using our crawler
-    injectable_urls : list[str] = crawl_through(attack_point,depth=cdepth,console=True)
+    injectable_urls : dict[str,bool] = crawl_through(attack_point,depth=cdepth,console=True)
     if len(injectable_urls)==0:
         print("No injectable urls found")
     elif user_args.verbose:

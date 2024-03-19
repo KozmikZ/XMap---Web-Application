@@ -27,13 +27,13 @@ class ScanCore: # A single object abstraction for a given scan, since it needs t
         
     def start_scan(self): 
         # the first function that is always called in the initializer of every ScanCore object, that decides which scan is to be run
-        if self.type == ScanType.deep:
+        if self.type == ScanType.DEEP:
             deep_job = threading.Thread(target=self._deep_scan,args=[self.target,])
             deep_job.start()
-        elif self.type == ScanType.manual:
+        elif self.type == ScanType.MANUAL:
             manual_job = threading.Thread(target=self._manual_scan,args=[self.target,*self.params])
             manual_job.start()
-        elif self.type == ScanType.quick:
+        elif self.type == ScanType.QUICK:
             quick_job = threading.Thread(target=self._quick_scan,args=[self.target,])
             quick_job.start()
     
