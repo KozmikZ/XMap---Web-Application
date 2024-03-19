@@ -23,7 +23,7 @@ def scrape_links(url:str,domain:str):
                     links.append(domain+"/"+href)
     return links
 
-def crawl_through(inp_start_page:str,depth=100,console=False) -> list[str]: 
+def crawl_through(inp_start_page:str,depth=100,console=False) -> dict[str,bool]: 
     # scrapes a domain for sites with parameters
     try:
         domain = inp_start_page.split("//")[0]+"//"+inp_start_page.split("//")[1].split("/")[0]
@@ -32,9 +32,9 @@ def crawl_through(inp_start_page:str,depth=100,console=False) -> list[str]:
     if console: # if we are running this in console
         print(f"Crawling starting from website {inp_start_page}")
         print(f"With max depth of {depth} pages")
-    visited = {} # bfs variables...
+    visited : dict[str,bool]= {} # bfs variables...
     queue: list[str] = [inp_start_page]
-    injectable_pages = {}
+    injectable_pages :dict[str,bool] = {}
     if len(get_url_parameters(inp_start_page))>0: # To add the input to possible injectable pages, as it often happens to be one
         injectable_pages[inp_start_page]=True
     dpmeter = 0

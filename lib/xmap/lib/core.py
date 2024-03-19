@@ -48,14 +48,12 @@ def pops_alert(url:str,driver:webdriver.Firefox,payload:str)->bool:
 
 def reflects(url:str,p:str)->bool: 
     # test if any parameter reflects on site:
-    url:Url = Url(url)
+    url : Url = Url(url)
     url.inject(p,"rXn4rT") # injecting the payload into the url
     resp = requests.get(url.__repr__(),headers={"User-Agent":rndhead()})
     reflections = re.finditer(string=str(resp.content),pattern=r"rXn4rT")# find the terminator and locator strings and whatever is in between
-    if len(list(reflections))==0:
-        return False
-    else:
-        return True
+    return len(list(reflections))==0
+ 
 
 def setup_firefox_driver(): 
     # setting up the webdriver, so we dont have to reopen it everytime a payload is tested

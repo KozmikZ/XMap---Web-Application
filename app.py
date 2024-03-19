@@ -1,4 +1,5 @@
 from flask import Flask,render_template,request,jsonify
+
 from lib.server_core import ServerCore
 from lib.xmap.scan_core import ScanCore
 application = Flask(__name__,template_folder='templates',static_url_path='',static_folder='templates/static')
@@ -12,7 +13,6 @@ def home():
 @application.route("/scan_site",methods=["GET","POST"])
 def scan_site(): 
     # route where your scan gets visualized
-    print(f"Scanning site {request.form['target']}")
     scan_type = request.form.get("scanType")
     id : int
     if scan_type=="qScan":

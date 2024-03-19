@@ -1,6 +1,6 @@
 from random import choice
 
-def get_url_parameters(url:str)->dict[str,str]: 
+def get_url_parameters(url:str)->dict[str,str] | list: 
     # Obtains a dictionary of url arguments f. ex. {'q':'query'}
     if "=" not in url:
         return []

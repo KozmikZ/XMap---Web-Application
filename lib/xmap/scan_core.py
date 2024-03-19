@@ -7,15 +7,15 @@ from enum import Enum
 import threading
 
 class ScanType(Enum):
-    deep = "deep"
-    manual = "manual"
-    quick = "quick"
+    DEEP = "DEEP"
+    MANUAL = "MANUAL"
+    QUICK = "QUICK"
 
 
 class ScanCore: # A single object abstraction for a given scan, since it needs to be communicating with the server as it goes
     def __init__(self,server,id:int,type:ScanType,target:str,params:list=[]) -> None:
-        self.params = params # parameters for a manual scan
-        self.metadata = {} # oop is objectively ugly and bad
+        self.params = params # parameters for a MANUAL scan
+        self.metadata : dict[str,str] = {} # oop is objectively ugly and bad
         self.scanned_targets : int= 0
         self.finished = False 
         self.vulns: list[Vulnerability] = []

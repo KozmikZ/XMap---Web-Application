@@ -95,7 +95,7 @@
                             jumbotronClone.querySelector("#vulndesc").innerText = `Vulnerability of parameter ${vulnerability["parameter"]} in link ${vulnerability["link"]}`;
                             jumbotronClone.querySelector("#metadata").innerText = `Payload: ${vulnerability['payload']}`;
                             jumbotronClone.querySelector("#viewbtn")["linkto"] = `${vulnerability["link"]}`;
-                            if (vulntype == "serious") {
+                            if (vulntype == "SERIOUS") {
                                 console.log(vulntype)
                                 jumbotronClone.querySelector("#vulntitle").style.color = "red";
                                 jumbotronClone.querySelector("#vulntitle").innerText = `Found ${vulntype} vulnerability`;
